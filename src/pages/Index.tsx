@@ -8,9 +8,13 @@ import PhoneDetails from '@/components/PhoneDetails';
 import DiagnosticScan from '@/components/DiagnosticScan';
 import CosmeticGrade from '@/components/CosmeticGrade';
 import OfferAcceptance from '@/components/OfferAcceptance';
+import AuthPage from '@/components/AuthPage';
+import UserMenu from '@/components/UserMenu';
+import { useAuth } from '@/hooks/useAuth';
 import { Smartphone, Zap } from 'lucide-react';
 
 const Index = () => {
+  const { isAuthenticated, loading } = useAuth();
   const [currentStep, setCurrentStep] = useState(1);
   const [phoneData, setPhoneData] = useState({
     brand: '',
@@ -50,6 +54,39 @@ const Index = () => {
     setPhoneData(prev => ({ ...prev, ...newData }));
   };
 
+  const handleAuthSuccess = () => {
+    // Reset the flow when user logs in
+    setCurrentStep(1);
+    setPhoneData({
+      brand: '',
+      model: '',
+      storage: '',
+      imei: '',
+      phoneNumber: '',
+      batteryHealth: '',
+      cosmeticGrade: '',
+      diagnosticResults: null,
+      finalPrice: 0
+    });
+  };
+
+  // Show loading spinner while checking auth state
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-pink-400 via-purple-500 to-red-500 flex items-center justify-center">
+        <div className="text-white text-center">
+          <Zap className="h-12 w-12 animate-pulse mx-auto mb-4" />
+          <p className="text-lg">Loading...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // Show auth page if not authenticated
+  if (!isAuthenticated) {
+    return <AuthPage onAuthSuccess={handleAuthSuccess} />;
+  }
+
   const CurrentStepComponent = steps[currentStep - 1].component;
 
   return (
@@ -57,16 +94,21 @@ const Index = () => {
       {/* Header */}
       <div className="bg-gradient-to-r from-pink-500 via-purple-600 to-red-500 text-white py-6 shadow-lg">
         <div className="container mx-auto px-4">
-          <div className="flex items-center justify-center space-x-3">
-            <Zap className="h-8 w-8 text-yellow-300" />
-            <h1 className="text-3xl md:text-4xl font-bold text-center">
-              ReCell AI Diagnostics
-            </h1>
-            <Zap className="h-8 w-8 text-yellow-300" />
+          <div className="flex items-center justify-between">
+            <div className="flex items-center space-x-3">
+              <Zap className="h-8 w-8 text-yellow-300" />
+              <div>
+                <h1 className="text-3xl md:text-4xl font-bold">
+                  ReCell AI Diagnostics
+                </h1>
+                <p className="text-lg text-pink-100">
+                  Advanced Mobile Device Analysis & Evaluation
+                </p>
+              </div>
+              <Zap className="h-8 w-8 text-yellow-300" />
+            </div>
+            <UserMenu />
           </div>
-          <p className="text-center text-lg mt-2 text-pink-100">
-            Advanced Mobile Device Analysis & Evaluation
-          </p>
         </div>
       </div>
 
