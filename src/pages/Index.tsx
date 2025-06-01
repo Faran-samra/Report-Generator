@@ -1,11 +1,143 @@
-// Update this page (the content is just a fallback if you fail to update the page)
+
+import React, { useState } from 'react';
+import { Card } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Progress } from '@/components/ui/progress';
+import ConnectPhone from '@/components/ConnectPhone';
+import PhoneDetails from '@/components/PhoneDetails';
+import DiagnosticScan from '@/components/DiagnosticScan';
+import CosmeticGrade from '@/components/CosmeticGrade';
+import OfferAcceptance from '@/components/OfferAcceptance';
+import { Smartphone, Zap } from 'lucide-react';
 
 const Index = () => {
+  const [currentStep, setCurrentStep] = useState(1);
+  const [phoneData, setPhoneData] = useState({
+    brand: '',
+    model: '',
+    storage: '',
+    imei: '',
+    phoneNumber: '',
+    batteryHealth: '',
+    cosmeticGrade: '',
+    diagnosticResults: null,
+    finalPrice: 0
+  });
+
+  const steps = [
+    { id: 1, title: 'Connect Phone', component: ConnectPhone },
+    { id: 2, title: 'Phone Details', component: PhoneDetails },
+    { id: 3, title: 'Diagnostic Scan', component: DiagnosticScan },
+    { id: 4, title: 'Cosmetic Grade', component: CosmeticGrade },
+    { id: 5, title: 'Offer Review', component: OfferAcceptance }
+  ];
+
+  const progress = (currentStep / steps.length) * 100;
+
+  const nextStep = () => {
+    if (currentStep < steps.length) {
+      setCurrentStep(currentStep + 1);
+    }
+  };
+
+  const prevStep = () => {
+    if (currentStep > 1) {
+      setCurrentStep(currentStep - 1);
+    }
+  };
+
+  const updatePhoneData = (newData) => {
+    setPhoneData(prev => ({ ...prev, ...newData }));
+  };
+
+  const CurrentStepComponent = steps[currentStep - 1].component;
+
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100">
-      <div className="text-center">
-        <h1 className="text-4xl font-bold mb-4">Welcome to Your Blank App</h1>
-        <p className="text-xl text-gray-600">Start building your amazing project here!</p>
+    <div className="min-h-screen bg-gradient-to-br from-pink-400 via-purple-500 to-red-500">
+      {/* Header */}
+      <div className="bg-gradient-to-r from-pink-500 via-purple-600 to-red-500 text-white py-6 shadow-lg">
+        <div className="container mx-auto px-4">
+          <div className="flex items-center justify-center space-x-3">
+            <Zap className="h-8 w-8 text-yellow-300" />
+            <h1 className="text-3xl md:text-4xl font-bold text-center">
+              ReCell AI Diagnostics
+            </h1>
+            <Zap className="h-8 w-8 text-yellow-300" />
+          </div>
+          <p className="text-center text-lg mt-2 text-pink-100">
+            Advanced Mobile Device Analysis & Evaluation
+          </p>
+        </div>
+      </div>
+
+      {/* Navigation Tabs */}
+      <div className="bg-white/10 backdrop-blur-md border-b border-white/20">
+        <div className="container mx-auto px-4">
+          <div className="grid grid-cols-4 gap-4 py-4">
+            <div className={`flex items-center space-x-2 px-4 py-2 rounded-lg transition-all ${
+              currentStep === 1 ? 'bg-purple-600 text-white' : 'text-white/70 hover:text-white hover:bg-white/10'
+            }`}>
+              <Smartphone className="h-5 w-5" />
+              <span className="hidden sm:inline">Phone Diagnostic</span>
+            </div>
+            <div className="flex items-center space-x-2 px-4 py-2 rounded-lg text-white/70 hover:text-white hover:bg-white/10 cursor-not-allowed">
+              <span className="h-5 w-5 rounded bg-white/20 flex items-center justify-center text-xs">📄</span>
+              <span className="hidden sm:inline">Company Profile</span>
+            </div>
+            <div className="flex items-center space-x-2 px-4 py-2 rounded-lg text-white/70 hover:text-white hover:bg-white/10 cursor-not-allowed">
+              <span className="h-5 w-5 rounded bg-white/20 flex items-center justify-center text-xs">📊</span>
+              <span className="hidden sm:inline">Diagnostic History</span>
+            </div>
+            <div className="flex items-center space-x-2 px-4 py-2 rounded-lg text-white/70 hover:text-white hover:bg-white/10 cursor-not-allowed">
+              <span className="h-5 w-5 rounded bg-white/20 flex items-center justify-center text-xs">⚙️</span>
+              <span className="hidden sm:inline">Admin Panel</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Progress Steps */}
+      <div className="bg-white/5 backdrop-blur-md border-b border-white/10">
+        <div className="container mx-auto px-4 py-6">
+          <div className="flex items-center justify-between mb-4">
+            {steps.map((step, index) => (
+              <div key={step.id} className="flex items-center">
+                <div className={`w-10 h-10 rounded-full flex items-center justify-center font-bold transition-all ${
+                  currentStep >= step.id 
+                    ? 'bg-purple-600 text-white shadow-lg' 
+                    : 'bg-white/20 text-white/60'
+                }`}>
+                  {step.id}
+                </div>
+                {index < steps.length - 1 && (
+                  <div className={`h-1 w-16 mx-2 rounded transition-all ${
+                    currentStep > step.id ? 'bg-purple-600' : 'bg-white/20'
+                  }`} />
+                )}
+              </div>
+            ))}
+          </div>
+          <Progress value={progress} className="h-2 bg-white/20" />
+          <p className="text-white text-center mt-2 font-medium">
+            Step {currentStep}: {steps[currentStep - 1].title}
+          </p>
+        </div>
+      </div>
+
+      {/* Main Content */}
+      <div className="container mx-auto px-4 py-8">
+        <Card className="bg-white/95 backdrop-blur-md shadow-2xl border-0">
+          <div className="p-6 md:p-8">
+            <CurrentStepComponent
+              phoneData={phoneData}
+              updatePhoneData={updatePhoneData}
+              nextStep={nextStep}
+              prevStep={prevStep}
+              currentStep={currentStep}
+              totalSteps={steps.length}
+            />
+          </div>
+        </Card>
       </div>
     </div>
   );
