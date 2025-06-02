@@ -11,10 +11,12 @@ import OfferAcceptance from '@/components/OfferAcceptance';
 import AuthPage from '@/components/AuthPage';
 import UserMenu from '@/components/UserMenu';
 import { useAuth } from '@/hooks/useAuth';
+import { useDiagnosticSession } from '@/hooks/useDiagnosticSession';
 import { Smartphone, Zap } from 'lucide-react';
 
 const Index = () => {
   const { isAuthenticated, loading } = useAuth();
+  const { saveDiagnosticSession, generateReceiptNumber } = useDiagnosticSession();
   const [currentStep, setCurrentStep] = useState(1);
   const [phoneData, setPhoneData] = useState({
     brand: '',
@@ -50,8 +52,15 @@ const Index = () => {
     }
   };
 
-  const updatePhoneData = (newData) => {
-    setPhoneData(prev => ({ ...prev, ...newData }));
+  const updatePhoneData = async (newData) => {
+    const updatedData = { ...phoneData, ...newData };
+    setPhoneData(updatedData);
+    
+    // Save to database when we have enough data (after phone details step)
+    if (currentStep === 2 && newData.brand && newData.model) {
+      console.log('Saving diagnostic session to database...');
+      await saveDiagnosticSession(updatedData);
+    }
   };
 
   const handleAuthSuccess = () => {
