@@ -5,12 +5,16 @@ import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Upload, FileSpreadsheet, Check, AlertCircle } from 'lucide-react';
 import * as XLSX from 'xlsx';
+import { parseExcelData } from '@/utils/pricingUtils';
 
 interface PricingData {
   brand: string;
   model: string;
   storage: string;
-  basePrice: number;
+  gradeA: number;
+  gradeB: number;
+  gradeC: number;
+  broken: number;
 }
 
 const PricingUpload = () => {
@@ -36,17 +40,12 @@ const PricingUpload = () => {
         const worksheet = workbook.Sheets[sheetName];
         const jsonData = XLSX.utils.sheet_to_json(worksheet);
 
-        // Process the Excel data
-        const processedData: PricingData[] = jsonData.map((row: any) => ({
-          brand: row.Brand || row.brand || '',
-          model: row.Model || row.model || '',
-          storage: row.Storage || row.storage || '',
-          basePrice: parseFloat(row['Base Price'] || row.basePrice || row.price || '0')
-        })).filter(item => item.brand && item.model && item.basePrice > 0);
+        // Process the Excel data using the new parser
+        const processedData = parseExcelData(jsonData);
 
         setUploadedData(processedData);
         
-        // Store in localStorage for now (in production, this would go to your database)
+        // Store in localStorage
         localStorage.setItem('devicePricing', JSON.stringify(processedData));
         
         setSuccess(true);
@@ -64,10 +63,10 @@ const PricingUpload = () => {
 
   const downloadTemplate = () => {
     const templateData = [
-      { Brand: 'iPhone', Model: 'iPhone 15 Pro', Storage: '128GB', 'Base Price': 350 },
-      { Brand: 'iPhone', Model: 'iPhone 15', Storage: '256GB', 'Base Price': 400 },
-      { Brand: 'Samsung', Model: 'Galaxy S24', Storage: '128GB', 'Base Price': 320 },
-      { Brand: 'Samsung', Model: 'Galaxy S23', Storage: '256GB', 'Base Price': 380 }
+      { Make: 'Apple', Model: 'iPhone 16 Pro', MemorySize: '128GB', GradeA: 2800, GradeB: 2520, GradeC: 2268, Broken: 907.2 },
+      { Make: 'Apple', Model: 'iPhone 15 Pro', MemorySize: '256GB', GradeA: 1800, GradeB: 1620, GradeC: 1458, Broken: 583.2 },
+      { Make: 'Samsung', Model: 'Galaxy S24', MemorySize: '128GB', GradeA: 800, GradeB: 720, GradeC: 648, Broken: 259.2 },
+      { Make: 'Google', Model: 'Pixel 9 Pro', MemorySize: '256GB', GradeA: 70, GradeB: 63, GradeC: 56.7, Broken: 22.68 }
     ];
 
     const worksheet = XLSX.utils.json_to_sheet(templateData);
@@ -80,7 +79,7 @@ const PricingUpload = () => {
     <div className="space-y-6">
       <div className="text-center space-y-2">
         <h2 className="text-2xl font-bold text-gray-800">Pricing Management</h2>
-        <p className="text-gray-600">Upload Excel file to update device pricing</p>
+        <p className="text-gray-600">Upload Excel file to update device pricing with grade-based values</p>
       </div>
 
       {/* Template Download */}
@@ -88,7 +87,7 @@ const PricingUpload = () => {
         <div className="flex items-center justify-between">
           <div>
             <h4 className="font-semibold text-blue-800">Need a template?</h4>
-            <p className="text-sm text-blue-600">Download our Excel template with the correct format</p>
+            <p className="text-sm text-blue-600">Download our Excel template with Make, Model, MemorySize, GradeA, GradeB, GradeC, Broken columns</p>
           </div>
           <Button 
             onClick={downloadTemplate}
@@ -169,7 +168,11 @@ const PricingUpload = () => {
                     <span className="font-medium">{item.brand} {item.model}</span>
                     <Badge variant="secondary" className="ml-2">{item.storage}</Badge>
                   </div>
-                  <span className="font-bold text-purple-600">${item.basePrice}</span>
+                  <div className="text-sm">
+                    <span className="text-green-600 font-bold">A: ${item.gradeA}</span>
+                    <span className="text-yellow-600 font-bold ml-2">B: ${item.gradeB}</span>
+                    <span className="text-orange-600 font-bold ml-2">C: ${item.gradeC}</span>
+                  </div>
                 </div>
               ))}
               {uploadedData.length > 10 && (
@@ -184,7 +187,7 @@ const PricingUpload = () => {
 
       <div className="text-center">
         <p className="text-sm text-gray-500">
-          Expected columns: Brand, Model, Storage, Base Price
+          Expected columns: Make, Model, MemorySize, GradeA, GradeB, GradeC, Broken
         </p>
       </div>
     </div>
