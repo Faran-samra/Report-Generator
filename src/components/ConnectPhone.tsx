@@ -4,7 +4,11 @@ import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Smartphone, Wifi, Bluetooth, Usb } from 'lucide-react';
 
-const ConnectPhone = ({ nextStep }) => {
+interface ConnectPhoneProps {
+  nextStep: () => void;
+}
+
+const ConnectPhone: React.FC<ConnectPhoneProps> = ({ nextStep }) => {
   const handleConnect = () => {
     // Simulate connection process
     setTimeout(() => {
