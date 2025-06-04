@@ -20,25 +20,10 @@ const ConnectPhone: React.FC<ConnectPhoneProps> = ({ nextStep }) => {
     <div className="space-y-6">
       <div className="text-center space-y-2">
         <h2 className="text-3xl font-bold text-gray-800">Connect Your Device</h2>
-        <p className="text-gray-600">Choose your preferred connection method</p>
       </div>
 
-      <div className="grid md:grid-cols-2 gap-6">
-        <Card className="p-6 hover:shadow-lg transition-shadow cursor-pointer">
-          <div className="text-center space-y-4">
-            <div className="bg-gradient-to-br from-blue-100 to-cyan-100 p-4 rounded-full w-16 h-16 mx-auto flex items-center justify-center">
-              <Wifi className="h-8 w-8 text-blue-600" />
-            </div>
-            <h3 className="text-xl font-semibold text-gray-800">Wireless Connection</h3>
-            <p className="text-gray-600">Connect via Wi-Fi for quick diagnostics</p>
-            <Button
-              onClick={handleConnect}
-              className="w-full bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-700 hover:to-cyan-700"
-            >
-              Connect Wirelessly
-            </Button>
-          </div>
-        </Card>
+      <div className="grid md:grid-cols-1 gap-6">
+       
 
         <Card className="p-6 hover:shadow-lg transition-shadow cursor-pointer">
           <div className="text-center space-y-4">
