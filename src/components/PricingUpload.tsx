@@ -169,9 +169,9 @@ const PricingUpload = () => {
                     <Badge variant="secondary" className="ml-2">{item.storage}</Badge>
                   </div>
                   <div className="text-sm">
-                    <span className="text-green-600 font-bold">A: ${item.gradeA}</span>
-                    <span className="text-yellow-600 font-bold ml-2">B: ${item.gradeB}</span>
-                    <span className="text-orange-600 font-bold ml-2">C: ${item.gradeC}</span>
+                    <span className="text-green-600 font-bold">A: {item.gradeA}</span>
+                    <span className="text-yellow-600 font-bold ml-2">B: {item.gradeB}</span>
+                    <span className="text-orange-600 font-bold ml-2">C: {item.gradeC}</span>
                   </div>
                 </div>
               ))}
